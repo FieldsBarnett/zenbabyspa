@@ -50,18 +50,22 @@ export function BookPage() {
     [minDateMs],
   );
 
-  const nowMs = Date.now();
+  const singleOffering = services?.length === 1 ? services[0] : null;
+  const activeServiceId = serviceId ?? singleOffering?._id ?? null;
+  const nowMs = useMemo(
+    () => Date.now(),
+    [activeServiceId, dateMs],
+  );
   const slots = useQuery(
     api.booking.getAvailableSlots,
-    serviceId ? { serviceId, dateMs, nowMs } : "skip",
+    activeServiceId ? { serviceId: activeServiceId, dateMs, nowMs } : "skip",
   );
 
   const selectedService = useMemo(
-    () => services?.find((s) => s._id === serviceId),
-    [services, serviceId],
+    () => services?.find((s) => s._id === activeServiceId),
+    [services, activeServiceId],
   );
 
-  const singleOffering = services?.length === 1 ? services[0] : null;
   const stepFlow = singleOffering
     ? (["schedule", "confirm"] as const)
     : (["service", "schedule", "confirm"] as const);
@@ -91,7 +95,7 @@ export function BookPage() {
   }
 
   async function confirmBooking() {
-    if (!serviceId || !selectedSlot) return;
+    if (!activeServiceId || !selectedSlot) return;
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
       setError("Please enter your email so we can add this booking to your account.");
@@ -102,7 +106,7 @@ export function BookPage() {
     setError(null);
     try {
       await createAppointment({
-        serviceId,
+        serviceId: activeServiceId,
         startTime: selectedSlot,
         email: trimmedEmail,
         name: name.trim() || undefined,
@@ -209,11 +213,21 @@ export function BookPage() {
                 </p>
               </div>
 
-              {slots === undefined && (
+              {services === undefined && (
+                <p className="text-sm text-muted-foreground">Loading session...</p>
+              )}
+
+              {services !== undefined && !activeServiceId && (
+                <p className="text-sm text-muted-foreground">
+                  No bookable session is available right now.
+                </p>
+              )}
+
+              {activeServiceId && slots === undefined && (
                 <p className="text-sm text-muted-foreground">Loading times...</p>
               )}
 
-              {slots?.length === 0 && (
+              {activeServiceId && slots?.length === 0 && (
                 <p className="text-sm text-muted-foreground">
                   No slots available this day. Try another date.
                 </p>

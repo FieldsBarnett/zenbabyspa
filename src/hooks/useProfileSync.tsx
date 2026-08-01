@@ -1,17 +1,34 @@
-import { useEffect } from "react";
-import { Authenticated, useConvexAuth } from "convex/react";
-import { useMutation } from "convex/react";
+import { useEffect, useState } from "react";
+import { Authenticated, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 
 export function ProfileSync({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useConvexAuth();
   const ensureProfile = useMutation(api.users.ensureProfileOnAuth);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      void ensureProfile({});
-    }
-  }, [isAuthenticated, ensureProfile]);
+    let cancelled = false;
+    void ensureProfile({})
+      .then(() => {
+        if (!cancelled) {
+          setReady(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setReady(true);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ensureProfile]);
+
+  if (!ready) {
+    return (
+      <div className="container py-16 text-muted-foreground">Loading...</div>
+    );
+  }
 
   return <>{children}</>;
 }

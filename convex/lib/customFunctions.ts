@@ -18,7 +18,7 @@ async function getAuthedContext(
   ctx: QueryCtx | MutationCtx,
   createIfMissing = false,
 ): Promise<AuthedCtx> {
-  const authUser = await authComponent.getAuthUser(ctx);
+  const authUser = await authComponent.safeGetAuthUser(ctx);
   if (!authUser) {
     throw new Error("Not authenticated");
   }
