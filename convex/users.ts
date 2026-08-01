@@ -106,9 +106,25 @@ export const getMyProfile = query({
       return null;
     }
 
-    return await ctx.db
+    const profile = await ctx.db
       .query("userProfiles")
       .withIndex("by_auth_user", (q) => q.eq("authUserId", authUser._id))
       .unique();
+
+    if (!profile) {
+      return null;
+    }
+
+    return {
+      _id: profile._id,
+      authUserId: profile.authUserId,
+      email: profile.email,
+      name: profile.name,
+      phone: profile.phone,
+      role: profile.role,
+      adminNotes: profile.adminNotes,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+    };
   },
 });
