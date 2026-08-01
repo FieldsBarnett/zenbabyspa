@@ -1,5 +1,6 @@
 import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { ensureDefaultService } from "./lib/defaultService";
 import { DEFAULT_EMAIL_TEMPLATES } from "./lib/emailTemplates";
 
 export const seed = internalMutation({
@@ -8,17 +9,7 @@ export const seed = internalMutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const existingServices = await ctx.db.query("services").first();
-    if (!existingServices) {
-      await ctx.db.insert("services", {
-        name: "45-Minute Spa Session",
-        description:
-          "One unhurried visit that weaves together hydrotherapy, parent–baby bonding massage, and sound therapy — expert-led, gentle, and designed for babies 0–18 months with their caregiver.",
-        durationMinutes: 45,
-        priceCents: 0,
-        active: true,
-      });
-    }
+    await ensureDefaultService(ctx);
 
     const existingRules = await ctx.db.query("availabilityRules").first();
     if (!existingRules) {

@@ -51,7 +51,7 @@ export function AdminEmails() {
         <h1 className="font-serif text-3xl">Email templates</h1>
         <p className="mt-2 text-muted-foreground">
           Edit transactional email content. Placeholders:{" "}
-          {"{{customerName}} {{serviceName}} {{appointmentDate}} {{appointmentTime}} {{magicLinkUrl}}"}
+          {"{{customerName}} {{customerEmail}} {{serviceName}} {{appointmentDate}} {{appointmentTime}} {{customerNotes}} {{reminderWhen}} {{magicLinkUrl}}"}
         </p>
       </div>
 

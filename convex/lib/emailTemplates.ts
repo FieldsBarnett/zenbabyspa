@@ -1,6 +1,7 @@
 export const EMAIL_TEMPLATE_KEYS = {
   magicLink: "magic_link",
   bookingConfirmation: "booking_confirmation",
+  bookingStudioNotification: "booking_studio_notification",
   bookingReminder: "booking_reminder",
   bookingCancellation: "booking_cancellation",
 } as const;
@@ -40,11 +41,18 @@ export const DEFAULT_EMAIL_TEMPLATES: Array<{
       "Hi {{customerName}},\n\nYour {{serviceName}} appointment is confirmed for {{appointmentDate}} at {{appointmentTime}}.\n\nWe look forward to seeing you at Zen Baby Studio.",
   },
   {
-    key: EMAIL_TEMPLATE_KEYS.bookingReminder,
-    subject: "Reminder: your Zen Baby Studio appointment tomorrow",
-    htmlBody: `<p>Hi {{customerName}},</p><p>This is a reminder for your {{serviceName}} appointment on {{appointmentDate}} at {{appointmentTime}}.</p>`,
+    key: EMAIL_TEMPLATE_KEYS.bookingStudioNotification,
+    subject: "New booking: {{customerName}} — {{appointmentDate}}",
+    htmlBody: `<p>A new appointment was booked.</p><ul><li><strong>Customer:</strong> {{customerName}} ({{customerEmail}})</li><li><strong>Service:</strong> {{serviceName}}</li><li><strong>When:</strong> {{appointmentDate}} at {{appointmentTime}}</li><li><strong>Notes:</strong> {{customerNotes}}</li></ul>`,
     textBody:
-      "Hi {{customerName}},\n\nReminder: {{serviceName}} on {{appointmentDate}} at {{appointmentTime}}.",
+      "New appointment booked.\n\nCustomer: {{customerName}} ({{customerEmail}})\nService: {{serviceName}}\nWhen: {{appointmentDate}} at {{appointmentTime}}\nNotes: {{customerNotes}}",
+  },
+  {
+    key: EMAIL_TEMPLATE_KEYS.bookingReminder,
+    subject: "Reminder: your Zen Baby Studio appointment {{reminderWhen}}",
+    htmlBody: `<p>Hi {{customerName}},</p><p>This is a reminder that your {{serviceName}} appointment is {{reminderWhen}} on {{appointmentDate}} at {{appointmentTime}}.</p>`,
+    textBody:
+      "Hi {{customerName}},\n\nReminder: your {{serviceName}} appointment is {{reminderWhen}} on {{appointmentDate}} at {{appointmentTime}}.",
   },
   {
     key: EMAIL_TEMPLATE_KEYS.bookingCancellation,

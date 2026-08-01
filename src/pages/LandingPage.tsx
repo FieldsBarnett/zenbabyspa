@@ -15,12 +15,12 @@ import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 
-const SESSION_NAME = "45-Minute Spa Session";
+const SESSION_NAME = "45-Minute Hydrotherapy & Bonding Massage";
 
 const FALLBACK_SESSION = {
   name: SESSION_NAME,
   description:
-    "One unhurried visit that weaves together every modality in our studio — expert-led, gentle, and designed for babies 0–18 months with their caregiver.",
+    "One unhurried visit combining warm hydrotherapy and parent–baby bonding massage — expert-led, gentle, and designed for babies 0–18 months with their caregiver.",
   durationMinutes: 45,
   modalities: [
     {

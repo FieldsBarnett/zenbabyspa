@@ -15,8 +15,11 @@ import {
   formatAppointmentTime,
   generateAvailableSlots,
   getDayStartMs,
+  getTodayAndTomorrowBounds,
+  STUDIO_TIMEZONE,
 } from "./lib/scheduling";
 import { EMAIL_TEMPLATE_KEYS } from "./lib/emailTemplates";
+import { STUDIO_NOTIFICATION_EMAIL } from "./lib/studioEmail";
 
 export const getAvailableSlots = query({
   args: {
@@ -132,6 +135,9 @@ export const createAppointment = mutation({
     });
 
     await ctx.scheduler.runAfter(0, internal.booking.sendConfirmationEmail, {
+      appointmentId,
+    });
+    await ctx.scheduler.runAfter(0, internal.booking.sendStudioNotificationEmail, {
       appointmentId,
     });
 
@@ -303,6 +309,32 @@ export const sendConfirmationEmail = internalMutation({
   },
 });
 
+export const sendStudioNotificationEmail = internalMutation({
+  args: { appointmentId: v.id("appointments") },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { appointment, service, profile } = await loadAppointmentEmailContext(
+      ctx,
+      args.appointmentId,
+    );
+
+    await ctx.runMutation(internal.emails.sendTemplatedEmail, {
+      to: STUDIO_NOTIFICATION_EMAIL,
+      templateKey: EMAIL_TEMPLATE_KEYS.bookingStudioNotification,
+      variables: {
+        customerName: profile.name,
+        customerEmail: profile.email,
+        serviceName: service.name,
+        appointmentDate: formatAppointmentDate(appointment.startTime),
+        appointmentTime: formatAppointmentTime(appointment.startTime),
+        customerNotes: appointment.customerNotes?.trim() || "None",
+      },
+    });
+
+    return null;
+  },
+});
+
 export const sendCancellationEmail = internalMutation({
   args: { appointmentId: v.id("appointments") },
   returns: v.null(),
@@ -331,18 +363,38 @@ export const sendReminderEmails = internalMutation({
   args: { nowMs: v.number() },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const windowStart = args.nowMs + 23 * 60 * 60 * 1000;
-    const windowEnd = args.nowMs + 25 * 60 * 60 * 1000;
+    const { todayStart, todayEnd, tomorrowStart, tomorrowEnd } =
+      getTodayAndTomorrowBounds(args.nowMs, STUDIO_TIMEZONE);
 
     const appointments = await ctx.db
       .query("appointments")
       .withIndex("by_status_and_start", (q) =>
-        q.eq("status", "confirmed").gte("startTime", windowStart),
+        q.eq("status", "confirmed").gte("startTime", todayStart),
       )
       .collect();
 
     for (const appointment of appointments) {
-      if (appointment.startTime > windowEnd) {
+      if (appointment.startTime >= tomorrowEnd) {
+        continue;
+      }
+
+      let reminderWhen: "today" | "tomorrow" | null = null;
+      if (
+        appointment.startTime >= todayStart &&
+        appointment.startTime < todayEnd
+      ) {
+        if (appointment.startTime <= args.nowMs) {
+          continue;
+        }
+        reminderWhen = "today";
+      } else if (
+        appointment.startTime >= tomorrowStart &&
+        appointment.startTime < tomorrowEnd
+      ) {
+        reminderWhen = "tomorrow";
+      }
+
+      if (!reminderWhen) {
         continue;
       }
 
@@ -364,6 +416,7 @@ export const sendReminderEmails = internalMutation({
           serviceName: service.name,
           appointmentDate: formatAppointmentDate(appointment.startTime),
           appointmentTime: formatAppointmentTime(appointment.startTime),
+          reminderWhen,
         },
       });
     }

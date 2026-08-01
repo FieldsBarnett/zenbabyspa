@@ -164,9 +164,12 @@ export const previewEmailTemplate = adminQuery({
 
     const sampleVariables = {
       customerName: "Alex",
-      serviceName: "Infant Massage",
+      customerEmail: "alex@example.com",
+      serviceName: "45-Minute Hydrotherapy & Bonding Massage",
       appointmentDate: "Tuesday, March 12, 2026",
       appointmentTime: "10:30 AM",
+      customerNotes: "First visit — baby is 6 months old.",
+      reminderWhen: "tomorrow",
       magicLinkUrl: "https://zenbabystudio.com/auth/verify?token=sample",
     };
 

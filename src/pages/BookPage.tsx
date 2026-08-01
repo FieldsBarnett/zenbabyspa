@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { format } from "date-fns";
+import { addDays, format, startOfDay } from "date-fns";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
+import { BookingCalendar } from "@/components/BookingCalendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +18,12 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+const BOOKING_HORIZON_DAYS = 60;
+
+function startOfDayMs(date = new Date()) {
+  return startOfDay(date).getTime();
+}
+
 export function BookPage() {
   const [searchParams] = useState(() => new URLSearchParams(window.location.search));
   const { isAuthenticated } = useConvexAuth();
@@ -27,11 +34,7 @@ export function BookPage() {
   const initialService = searchParams.get("service") as Id<"services"> | null;
   const [step, setStep] = useState(1);
   const [serviceId, setServiceId] = useState<Id<"services"> | null>(initialService);
-  const [dateMs, setDateMs] = useState<number>(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    return d.getTime();
-  });
+  const [dateMs, setDateMs] = useState<number>(() => startOfDayMs());
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -40,6 +43,12 @@ export function BookPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [prefilledContact, setPrefilledContact] = useState(false);
+
+  const minDateMs = useMemo(() => startOfDayMs(), []);
+  const maxDateMs = useMemo(
+    () => startOfDay(addDays(new Date(minDateMs), BOOKING_HORIZON_DAYS)).getTime(),
+    [minDateMs],
+  );
 
   const nowMs = Date.now();
   const slots = useQuery(
@@ -54,8 +63,8 @@ export function BookPage() {
 
   const singleOffering = services?.length === 1 ? services[0] : null;
   const stepFlow = singleOffering
-    ? (["date", "time", "confirm"] as const)
-    : (["service", "date", "time", "confirm"] as const);
+    ? (["schedule", "confirm"] as const)
+    : (["service", "schedule", "confirm"] as const);
   const currentStep = stepFlow[step - 1];
 
   useEffect(() => {
@@ -76,17 +85,10 @@ export function BookPage() {
     return `$${(priceCents / 100).toFixed(0)}`;
   }
 
-  const dateOptions = useMemo(() => {
-    const options = [];
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-    for (let i = 0; i < 14; i++) {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      options.push(d.getTime());
-    }
-    return options;
-  }, []);
+  function handleSelectDate(nextDateMs: number) {
+    setDateMs(nextDateMs);
+    setSelectedSlot(null);
+  }
 
   async function confirmBooking() {
     if (!serviceId || !selectedSlot) return;
@@ -146,7 +148,7 @@ export function BookPage() {
     <div className="container max-w-2xl py-12">
       <h1 className="font-serif text-4xl">Book a session</h1>
       <p className="mt-2 text-muted-foreground">
-        Step {step} of {stepFlow.length} — pick a date first, then we&apos;ll
+        Step {step} of {stepFlow.length} — choose a date and time, then we&apos;ll
         save the booking to your account with your email.
       </p>
 
@@ -185,72 +187,65 @@ export function BookPage() {
         </Card>
       )}
 
-      {currentStep === "date" && (
+      {currentStep === "schedule" && (
         <Card className="mt-8">
           <CardHeader>
-            <CardTitle>Pick a date</CardTitle>
+            <CardTitle>Pick a date & time</CardTitle>
             <CardDescription>{selectedService?.name}</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {dateOptions.map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => {
-                  setDateMs(d);
-                  setSelectedSlot(null);
-                }}
-                className={cn(
-                  "rounded-md border px-3 py-2 text-sm",
-                  dateMs === d ? "border-primary bg-primary/5" : "hover:border-primary/40",
-                )}
-              >
-                {format(d, "EEE, MMM d")}
-              </button>
-            ))}
-            <div className="col-span-full flex gap-2 pt-4">
+          <CardContent className="space-y-6">
+            <BookingCalendar
+              selectedDateMs={dateMs}
+              onSelectDate={handleSelectDate}
+              minDateMs={minDateMs}
+              maxDateMs={maxDateMs}
+            />
+
+            <div className="space-y-3 border-t pt-6">
+              <div>
+                <h3 className="font-medium">Available times</h3>
+                <p className="text-sm text-muted-foreground">
+                  {format(dateMs, "EEEE, MMMM d")}
+                </p>
+              </div>
+
+              {slots === undefined && (
+                <p className="text-sm text-muted-foreground">Loading times...</p>
+              )}
+
+              {slots?.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  No slots available this day. Try another date.
+                </p>
+              )}
+
+              {!!slots?.length && (
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  {slots.map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => setSelectedSlot(slot)}
+                      className={cn(
+                        "rounded-md border px-2 py-2 text-sm transition",
+                        selectedSlot === slot
+                          ? "border-primary bg-primary/5"
+                          : "hover:border-primary/40",
+                      )}
+                    >
+                      {format(slot, "h:mm a")}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 pt-2">
               {!singleOffering && (
                 <Button variant="outline" onClick={() => setStep(1)}>
                   Back
                 </Button>
               )}
-              <Button onClick={() => setStep(step + 1)}>Continue</Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {currentStep === "time" && (
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Pick a time</CardTitle>
-            <CardDescription>{format(dateMs, "EEEE, MMMM d")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {!slots?.length && (
-              <p className="text-sm text-muted-foreground">No slots available this day.</p>
-            )}
-            <div className="grid grid-cols-3 gap-2">
-              {(slots ?? []).map((slot) => (
-                <button
-                  key={slot}
-                  type="button"
-                  onClick={() => setSelectedSlot(slot)}
-                  className={cn(
-                    "rounded-md border px-2 py-2 text-sm",
-                    selectedSlot === slot
-                      ? "border-primary bg-primary/5"
-                      : "hover:border-primary/40",
-                  )}
-                >
-                  {format(slot, "h:mm a")}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 flex gap-2">
-              <Button variant="outline" onClick={() => setStep(step - 1)}>
-                Back
-              </Button>
               <Button disabled={!selectedSlot} onClick={() => setStep(step + 1)}>
                 Continue
               </Button>

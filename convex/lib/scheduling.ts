@@ -1,5 +1,77 @@
 import { format } from "date-fns";
 
+export const STUDIO_TIMEZONE =
+  process.env.STUDIO_TIMEZONE ?? "America/New_York";
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+type ZonedParts = {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+};
+
+function getZonedParts(dateMs: number, timeZone: string): ZonedParts {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(new Date(dateMs));
+
+  const get = (type: string) =>
+    Number(parts.find((part) => part.type === type)?.value ?? 0);
+
+  return {
+    year: get("year"),
+    month: get("month"),
+    day: get("day"),
+    hour: get("hour"),
+    minute: get("minute"),
+    second: get("second"),
+  };
+}
+
+export function getZonedDateKey(dateMs: number, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(dateMs));
+}
+
+export function getZonedDayStartMs(dateKey: string, timeZone: string): number {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const anchor = Date.UTC(year, month - 1, day, 12, 0, 0);
+  const parts = getZonedParts(anchor, timeZone);
+  const msFromMidnight =
+    parts.hour * 3_600_000 + parts.minute * 60_000 + parts.second * 1000;
+  return anchor - msFromMidnight;
+}
+
+export function isStudioReminderHour(nowMs: number): boolean {
+  return getZonedParts(nowMs, STUDIO_TIMEZONE).hour === 8;
+}
+
+export function getTodayAndTomorrowBounds(nowMs: number, timeZone: string) {
+  const todayKey = getZonedDateKey(nowMs, timeZone);
+  const todayStart = getZonedDayStartMs(todayKey, timeZone);
+  const todayEnd = todayStart + MS_PER_DAY;
+  const tomorrowKey = getZonedDateKey(todayStart + MS_PER_DAY, timeZone);
+  const tomorrowStart = getZonedDayStartMs(tomorrowKey, timeZone);
+  const tomorrowEnd = tomorrowStart + MS_PER_DAY;
+
+  return { todayStart, todayEnd, tomorrowStart, tomorrowEnd };
+}
+
 export function parseTimeToMinutes(time: string): number {
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;

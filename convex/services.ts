@@ -1,5 +1,6 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { DEFAULT_SERVICE } from "./lib/defaultService";
 
 const serviceValidator = v.object({
   _id: v.id("services"),
@@ -21,7 +22,15 @@ export const listPublic = query({
       .withIndex("by_active", (q) => q.eq("active", true))
       .collect();
 
-    return services;
+    if (services.length <= 1) {
+      return services;
+    }
+
+    const canonical =
+      services.find((service) => service.name === DEFAULT_SERVICE.name) ??
+      services[0];
+
+    return canonical ? [canonical] : [];
   },
 });
 
