@@ -125,7 +125,15 @@ export const listAvailabilityRules = adminQuery({
     }),
   ),
   handler: async (ctx) => {
-    return await ctx.db.query("availabilityRules").collect();
+    const rules = await ctx.db.query("availabilityRules").collect();
+    return rules.map((rule) => ({
+      _id: rule._id,
+      dayOfWeek: rule.dayOfWeek,
+      startTime: rule.startTime,
+      endTime: rule.endTime,
+      slotIntervalMinutes: rule.slotIntervalMinutes,
+      active: rule.active,
+    }));
   },
 });
 
@@ -172,7 +180,16 @@ export const listBlockedTimes = adminQuery({
     }),
   ),
   handler: async (ctx) => {
-    return await ctx.db.query("blockedTimes").order("desc").collect();
+    const blockedTimes = await ctx.db
+      .query("blockedTimes")
+      .order("desc")
+      .collect();
+    return blockedTimes.map((blocked) => ({
+      _id: blocked._id,
+      startTime: blocked.startTime,
+      endTime: blocked.endTime,
+      reason: blocked.reason,
+    }));
   },
 });
 
@@ -219,7 +236,16 @@ export const listServices = adminQuery({
     }),
   ),
   handler: async (ctx) => {
-    return await ctx.db.query("services").collect();
+    const services = await ctx.db.query("services").collect();
+    return services.map((service) => ({
+      _id: service._id,
+      name: service.name,
+      description: service.description,
+      durationMinutes: service.durationMinutes,
+      priceCents: service.priceCents,
+      imageUrl: service.imageUrl,
+      active: service.active,
+    }));
   },
 });
 

@@ -47,6 +47,12 @@ export function AdminSchedule() {
     setBlockReason("");
   }
 
+  if (rules === undefined || blocked === undefined) {
+    return (
+      <div className="py-8 text-muted-foreground">Loading schedule settings...</div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div>
@@ -89,7 +95,7 @@ export function AdminSchedule() {
             </div>
           </div>
           <ul className="space-y-2 text-sm">
-            {(rules ?? []).map((rule) => (
+            {rules.map((rule) => (
               <li
                 key={rule._id}
                 className="flex items-center justify-between rounded border px-3 py-2"
@@ -155,7 +161,7 @@ export function AdminSchedule() {
             </div>
           </div>
           <ul className="space-y-2 text-sm">
-            {(blocked ?? []).map((b) => (
+            {blocked.map((b) => (
               <li
                 key={b._id}
                 className="flex items-center justify-between rounded border px-3 py-2"
