@@ -1,0 +1,27 @@
+{
+  "title": "Landing redesign — a few locks",
+  "question": "You shared a real studio photo (it shows BubbleBliss on the arch). Pick the path that matches how we should redesign the Zen Baby Studio landing page.",
+  "options": [
+    {
+      "id": "photo-hero-site-world",
+      "label": "Photo as hero · new site world",
+      "kicker": "RECOMMENDED IF THIS IS YOUR SPACE",
+      "body": "Use the studio photo as a full-bleed first-viewport hero for Zen Baby Studio (crop/overlay so BubbleBliss wordmark isn’t the brand read). Replace the current cream-and-sage “Limewash Retreat” system with a quieter greige/taupe world drawn from the room: matte plaster walls, warm arch glow, white linen stations. Landing redesign ships that world; DESIGN.md updates to match. Still one offer, Book as primary action, no fake proof."
+    },
+    {
+      "id": "photo-hero-landing-only",
+      "label": "Photo as hero · landing only",
+      "kicker": "KEEP SITE TOKENS",
+      "body": "Hero and landing composition rebuild around the real photo and arched architecture, but keep the existing cream/sage tokens and Cormorant/DM Sans pairing elsewhere. Faster, less systemic change — good if admin/booking should stay visually identical."
+    },
+    {
+      "id": "mood-only-new-world",
+      "label": "Mood only · invent new world",
+      "kicker": "PHOTO STAYS PRIVATE",
+      "body": "Treat the photo as private art direction only — don’t put it on the live site (e.g. BubbleBliss branding conflict, or not ready for public). Still redesign the landing with a replacement visual world inspired by that atmosphere, using authored/placeholder imagery instead of the raw photo."
+    }
+  ],
+  "reroll": false,
+  "canon": false,
+  "steer": true
+}

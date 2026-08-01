@@ -1,0 +1,30 @@
+{
+  "title": "Approve a landing composition",
+  "question": "Nursery Apothecary Shelf is locked. Which composition should we build? Say what to keep, what feels false, or ask for a combine/revise.",
+  "options": [
+    {
+      "id": "comp-a",
+      "label": "Arch Aperture",
+      "kicker": "COMP A",
+      "body": "Full-bleed arched still-life as the first viewport. Brand + headline + Book sit in the lower third. Modalities peek below as a shelf row. Closest to the studio’s backlit-arch architecture — strongest brand memory test.",
+      "hero": "/Users/fields.barnett/prepo/zenbabystudio/.impeccable/comps/comp-a-arch-aperture.png"
+    },
+    {
+      "id": "comp-b",
+      "label": "Shelf Horizon",
+      "kicker": "COMP B",
+      "body": "Wide horizontal station shelf as the hero plane. Brand and copy above; Book placed on the shelf edge. Reads most literally as an apothecary shelf. Risk: less dramatic than the arch.",
+      "hero": "/Users/fields.barnett/prepo/zenbabystudio/.impeccable/comps/comp-b-shelf-horizon.png"
+    },
+    {
+      "id": "comp-c",
+      "label": "Ritual Descent",
+      "kicker": "COMP C",
+      "body": "Edge-to-edge station close-up with plaster band for type, then modalities as an inventory list and booking as a connected ritual flow. Strongest full-page system proof. Risk: denser; hero brand must stay large in build.",
+      "hero": "/Users/fields.barnett/prepo/zenbabystudio/.impeccable/comps/comp-c-ritual-descent.png"
+    }
+  ],
+  "reroll": false,
+  "canon": false,
+  "steer": true
+}

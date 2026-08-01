@@ -1,0 +1,25 @@
+{
+  "title": "Choose the visual world",
+  "question": "The roll assigned Nursery Apothecary Shelf — a quiet ritual of care materials drawn from your studio’s atmosphere (photo stays private; we author the imagery). Keep it, take the fused alternate, re-roll, or play the category straight.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Nursery Apothecary Shelf",
+      "kicker": "THE ROLL",
+      "lineage": "Infant-care ritual · plaster greige · linen · warm amber register",
+      "body": "WORLD: The landing page is a prepared care shelf — pale greige plaster fields, matte linen whites, soft wood edges, and one warm amber light (the backlit-arch glow) reserved for the Book action. Type pairs a soft engraved-feeling display serif with a quiet grotesque for labels and booking UI — not the old Cormorant/DM Sans limewash look.\n\nFIRST VIEWPORT: Full-bleed still-life of a prepared infant station (authored imagery, no BubbleBliss photo) inside an arched aperture. Brand name at hero scale, one calm headline, one sentence about the 45-minute session in Sandy Springs, Book + Learn more. No cards, stats, or urgency.\n\nPATH: Arch hero → what the session weaves (hydrotherapy / massage / sound as shelf labels, not service cards) → how booking works as a short ritual → FAQ as folded notes → close with Book.\n\nSIGNATURE: Arch-framed imagery + amber-only primary actions; shelf rhythm instead of marketing card grids.\n\nRISK: If the still-life feels generic “spa stock,” it collapses into wellness wallpaper — imagery and copy must stay specific to infant stations and Sandy Springs."
+    },
+    {
+      "id": "challenger-glazier",
+      "label": "Glazier Colorfield Partition",
+      "kicker": "FUSED ALTERNATE",
+      "lineage": "Steel-framed glass partition · hand-rolled panes · amber active field",
+      "body": "FUSED: Your studio becomes a quiet glazing wall — matte black mullions, seeded-white panes, one amber pane that is always Book. Each modality lives in its own pane (one pane, one statement). Hierarchy comes from pane size and glass color, not card stacks.\n\nCASE: Stronger compositional rigor and a memorable first viewport; cooler and more architectural than the warm shelf ritual. Worth it if you want the site to feel like modernist craft architecture more than nursery care.",
+      "hero": "/Users/fields.barnett/prepo/zenbabystudio/.impeccable/quality-bar/glazier-hero.webp",
+      "board": "/Users/fields.barnett/prepo/zenbabystudio/.impeccable/quality-bar/glazier-board.webp"
+    }
+  ],
+  "reroll": true,
+  "canon": true,
+  "steer": true
+}

@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-27T01:14:00.000Z",
+  "title": "Design System: Zen Baby Studio",
+  "extensions": {
+    "colorMeta": {
+      "plaster-ground": {
+        "role": "neutral",
+        "displayName": "Plaster",
+        "canonical": "#E8E6E1",
+        "tonalRamp": [
+          "oklch(22% 0.01 90)",
+          "oklch(32% 0.012 90)",
+          "oklch(42% 0.012 90)",
+          "oklch(55% 0.012 90)",
+          "oklch(68% 0.012 90)",
+          "oklch(78% 0.012 90)",
+          "oklch(88% 0.01 90)",
+          "oklch(94% 0.008 90)"
+        ]
+      },
+      "ink-charcoal": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#2C2A28",
+        "tonalRamp": [
+          "oklch(18% 0.01 60)",
+          "oklch(25% 0.01 60)",
+          "oklch(32% 0.01 60)",
+          "oklch(40% 0.01 60)",
+          "oklch(50% 0.01 60)",
+          "oklch(60% 0.008 60)",
+          "oklch(72% 0.006 60)",
+          "oklch(94% 0.004 60)"
+        ]
+      },
+      "amber-primary": {
+        "role": "primary",
+        "displayName": "Arch Amber",
+        "canonical": "#B8956A",
+        "tonalRamp": [
+          "oklch(28% 0.05 70)",
+          "oklch(38% 0.06 70)",
+          "oklch(48% 0.07 70)",
+          "oklch(57% 0.075 70)",
+          "oklch(65% 0.07 70)",
+          "oklch(75% 0.055 70)",
+          "oklch(85% 0.04 70)",
+          "oklch(94% 0.02 70)"
+        ]
+      },
+      "linen-surface": {
+        "role": "neutral",
+        "displayName": "Linen",
+        "canonical": "#F7F6F4",
+        "tonalRamp": [
+          "oklch(30% 0.008 90)",
+          "oklch(45% 0.008 90)",
+          "oklch(60% 0.008 90)",
+          "oklch(72% 0.008 90)",
+          "oklch(82% 0.008 90)",
+          "oklch(90% 0.008 90)",
+          "oklch(95% 0.006 90)",
+          "oklch(98% 0.004 90)"
+        ]
+      },
+      "wood-secondary": {
+        "role": "secondary",
+        "displayName": "Wood",
+        "canonical": "#A89078",
+        "tonalRamp": [
+          "oklch(30% 0.03 70)",
+          "oklch(40% 0.035 70)",
+          "oklch(50% 0.04 70)",
+          "oklch(58% 0.04 70)",
+          "oklch(68% 0.035 70)",
+          "oklch(78% 0.03 70)",
+          "oklch(88% 0.02 70)",
+          "oklch(95% 0.01 70)"
+        ]
+      },
+      "mist-muted": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "#D9D5CE",
+        "tonalRamp": [
+          "oklch(28% 0.01 85)",
+          "oklch(40% 0.01 85)",
+          "oklch(52% 0.012 85)",
+          "oklch(64% 0.012 85)",
+          "oklch(74% 0.012 85)",
+          "oklch(82% 0.01 85)",
+          "oklch(90% 0.008 85)",
+          "oklch(96% 0.005 85)"
+        ]
+      },
+      "shelf-border": {
+        "role": "neutral",
+        "displayName": "Shelf Border",
+        "canonical": "#C9C3B8",
+        "tonalRamp": [
+          "oklch(30% 0.012 80)",
+          "oklch(42% 0.014 80)",
+          "oklch(54% 0.014 80)",
+          "oklch(66% 0.014 80)",
+          "oklch(76% 0.014 80)",
+          "oklch(84% 0.012 80)",
+          "oklch(90% 0.01 80)",
+          "oklch(96% 0.006 80)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero brand and section headlines — Gloock only."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "UI, booking flows, supporting copy — Schibsted Grotesk."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase tracked shelf labels and button text."
+      }
+    },
+    "shadows": [
+      {
+        "name": "resting",
+        "value": "0 1px 2px rgba(44, 42, 40, 0.06)",
+        "purpose": "Optional resting lift on primary buttons only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "hero-rise",
+        "value": "1.1s cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Hero copy entrance from slightly blurred rise."
+      },
+      {
+        "name": "arch-glow",
+        "value": "5.5s ease-in-out infinite",
+        "purpose": "Soft amber glow pulse along the arch register."
+      },
+      {
+        "name": "shelf-in",
+        "value": "0.9s cubic-bezier(0.22, 1, 0.36, 1)",
+        "purpose": "Modality shelf items settle into place."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Amber Book CTA — the only saturated action color.",
+      "html": "<button class=\"ds-btn-primary\">BOOK A SESSION</button>",
+      "css": ".ds-btn-primary { background: #B8956A; color: #F7F6F4; padding: 12px 28px; letter-spacing: 0.16em; text-transform: uppercase; font: 500 0.75rem/1.4 \"Schibsted Grotesk\", sans-serif; border: none; border-radius: 10px; transition: background 0.2s; } .ds-btn-primary:hover { background: #A89078; } .ds-btn-primary:focus-visible { outline: 2px solid #B8956A; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action on plaster/linen.",
+      "html": "<button class=\"ds-btn-outline\">LEARN MORE</button>",
+      "css": ".ds-btn-outline { background: transparent; color: #2C2A28; padding: 12px 28px; letter-spacing: 0.16em; text-transform: uppercase; font: 500 0.75rem/1.4 \"Schibsted Grotesk\", sans-serif; border: 1px solid #C9C3B8; border-radius: 10px; transition: background 0.2s; } .ds-btn-outline:hover { background: #D9D5CE; } .ds-btn-outline:focus-visible { outline: 2px solid #B8956A; outline-offset: 2px; }"
+    },
+    {
+      "name": "Site Nav",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Fixed header with Gloock wordmark and amber Sign in.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-wordmark\" href=\"/\">Zen Baby Studio</a><a class=\"ds-link\" href=\"/services\">Services</a><a class=\"ds-cta\" href=\"/auth\">SIGN IN</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; height: 64px; padding: 0 24px; background: rgba(247,246,244,0.85); font-family: \"Schibsted Grotesk\", sans-serif; } .ds-wordmark { font-family: Gloock, Georgia, serif; font-size: 1.25rem; color: #2C2A28; text-decoration: none; } .ds-link { color: #2C2A28; text-decoration: none; font-size: 0.875rem; } .ds-link:hover { color: #B8956A; } .ds-cta { background: #B8956A; color: #F7F6F4; padding: 8px 16px; border-radius: 10px; font-size: 0.75rem; letter-spacing: 0.14em; text-decoration: none; }"
+    },
+    {
+      "name": "Default Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Linen field with shelf border for booking forms.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"you@email.com\" />",
+      "css": ".ds-input { height: 40px; width: 100%; padding: 8px 12px; background: #F7F6F4; color: #2C2A28; border: 1px solid #C9C3B8; border-radius: 10px; font: 400 1rem/1.4 \"Schibsted Grotesk\", sans-serif; } .ds-input::placeholder { color: #5C5752; } .ds-input:focus-visible { outline: 2px solid #B8956A; outline-offset: 1px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Nursery Apothecary Shelf",
+    "overview": "The digital presence is a prepared infant-care shelf: pale greige plaster, matte linen, soft wood edges, and a single warm amber register borrowed from a backlit studio arch. The page should feel like walking up to a station that has already been laid out for you — ritual precision without clinical chill, quiet luxury without cream-spa cliché.",
+    "keyCharacteristics": [
+      "Cool greige plaster ground (not warm cream)",
+      "Amber as the only saturated action color (≤10% of any screen)",
+      "Arch-framed imagery as the signature container",
+      "Shelf / station rhythm instead of marketing card stacks",
+      "Light mode only for marketing — the studio is daylight plaster"
+    ],
+    "rules": [
+      {
+        "name": "The Amber Sparingly Rule",
+        "body": "Amber appears on primary actions and small active states only. Greige and linen own the field.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Sage / No Cream Rule",
+        "body": "Do not revive the previous misted-sage primary or warm limewash cream ground. This world is cooler plaster with one warm light.",
+        "section": "colors"
+      },
+      {
+        "name": "The Serif Threshold Rule",
+        "body": "Gloock for brand moments and headings only — never form labels, errors, or admin tables.",
+        "section": "typography"
+      }
+    ],
+    "dos": [
+      "Do keep marketing light, greige, and arch-led.",
+      "Do reserve amber for Book and active states.",
+      "Do author infant-station imagery; never use the private BubbleBliss photo on the live site.",
+      "Do stage modalities as shelf labels / ritual steps, not three equal icon cards."
+    ],
+    "donts": [
+      "Don't use Cormorant Garamond, Literata, Figtree, DM Sans, sage green, or warm cream as brand materials.",
+      "Don't invent testimonials, prices, or a street address.",
+      "Don't put cards, badges, or promo stickers on the hero image.",
+      "Don't use urgency theater or clinical hospital blue."
+    ]
+  }
+}
