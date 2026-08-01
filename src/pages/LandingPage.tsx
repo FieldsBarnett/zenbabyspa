@@ -20,20 +20,20 @@ const SESSION_NAME = "45-Minute Hydrotherapy & Bonding Massage";
 const FALLBACK_SESSION = {
   name: SESSION_NAME,
   description:
-    "One unhurried visit combining warm hydrotherapy and parent–baby bonding massage — expert-led, gentle, and designed for babies 0–18 months with their caregiver.",
+    "A 45-minute visit with warm hydrotherapy and parent–baby bonding massage. For babies 0–18 months, with a caregiver in the room the whole time.",
   durationMinutes: 45,
   modalities: [
     {
       name: "Warm hydrotherapy",
-      note: "Gentle water immersion guided for infant comfort",
+      note: "Warm water, guided at your baby's pace",
     },
     {
       name: "Parent–baby bonding massage",
-      note: "Hands-on connection you practice together",
+      note: "Massage you learn to do together",
     },
     {
       name: "Therapeutic sound therapy",
-      note: "Soft frequency to settle the nervous system",
+      note: "Soft sound to help your baby settle",
     },
   ],
 };
@@ -42,39 +42,39 @@ const FAQ_ITEMS = [
   {
     question: "What ages do you serve?",
     answer:
-      "Zen Baby Studio welcomes infants from birth through 18 months. Each session is tailored to your baby's developmental stage.",
+      "Zen Baby Studio welcomes infants from birth through 18 months. We adjust each session to where your baby is developmentally.",
   },
   {
     question: "What is included in the spa session?",
     answer:
-      "Every 45-minute visit includes hydrotherapy, parent–baby bonding massage, and sound therapy — one continuous, expert-led experience rather than separate add-ons.",
+      "Your 45-minute visit covers hydrotherapy, parent–baby bonding massage, and sound therapy. One session, all three.",
   },
   {
     question: "Is hydrotherapy safe for my baby?",
     answer:
-      "Every session is expert-led and fully supervised in our Sandy Springs studio. We maintain a calm, controlled environment designed specifically for infant wellness — never clinical, always gentle.",
+      "Sessions happen in our Sandy Springs studio with a trained practitioner in the room. The space is calm and set up for infants, not a medical office.",
   },
   {
     question: "What should I bring to our first visit?",
     answer:
-      "Bring a fresh diaper, a comfort item your baby knows, and anything that helps them feel at ease. We provide everything needed for the session itself.",
+      "A fresh diaper and something familiar for your baby (a blanket, pacifier, whatever they like). We supply the rest.",
   },
   {
     question: "Can I reschedule or cancel?",
     answer:
-      "Yes — life with a little one is unpredictable. You can manage upcoming appointments from your account page. Our full cancellation policy will be shared before opening.",
+      "Yes. You can change or cancel upcoming appointments from your account. We'll share the full cancellation policy before we open.",
   },
   {
     question: "What happens during a first visit?",
     answer:
-      "We'll welcome you into the studio, talk through your baby's needs, and guide you through the full 45-minute session at an unhurried pace. There's no rush — the goal is comfort for both of you.",
+      "We greet you at the studio, ask about your baby, then walk you through the full session. No clock-watching. The point is for both of you to feel comfortable.",
   },
 ];
 
 const BOOKING_STEPS = [
   {
     title: "Pick a date",
-    body: "Choose a day that works between naps and errands — a few taps on your phone.",
+    body: "Pick a day that fits between naps and errands. Takes a few taps on your phone.",
   },
   {
     title: "Select a time",
@@ -82,7 +82,7 @@ const BOOKING_STEPS = [
   },
   {
     title: "Arrive & unwind",
-    body: "We'll have a station ready. You settle in; we guide the full ritual.",
+    body: "We set up your station before you arrive. You get settled; we lead the session.",
   },
 ];
 
@@ -202,7 +202,7 @@ export function LandingPage() {
               One visit, three modalities
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Not add-ons — a single continuous ritual prepared for your baby.
+              All three are part of the same visit, not extras you pick and choose.
             </p>
           </div>
           <ul className="mx-auto mt-12 grid max-w-4xl gap-0 border-y border-border/60 md:grid-cols-3">
@@ -237,7 +237,7 @@ export function LandingPage() {
               The session
             </h2>
             <p className="mt-3 text-muted-foreground">
-              One offering — every modality, one tranquil visit
+              One session. All three modalities included.
             </p>
           </div>
           {isLoading ? (
@@ -387,8 +387,8 @@ export function LandingPage() {
             </div>
           </dl>
           <p className="mt-4 text-xs text-muted-foreground">
-            Placeholder details — final location and hours will be confirmed
-            before opening.
+            Placeholder details. Final location and hours will be confirmed before
+            opening.
           </p>
         </div>
       </section>

@@ -25,8 +25,8 @@ export function ServicesPage() {
       <div className="mb-10 max-w-2xl">
         <h1 className="font-serif text-4xl">The session</h1>
         <p className="mt-3 text-muted-foreground">
-          One 45-minute spa visit in Sandy Springs — every modality woven into a single,
-          expert-led experience for infants 0–18 months and their caregiver.
+          One 45-minute visit in Sandy Springs. Hydrotherapy, bonding massage, and
+          sound therapy, for infants 0–18 months with their caregiver.
         </p>
       </div>
       {session ? (

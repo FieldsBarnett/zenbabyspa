@@ -4,7 +4,7 @@ import type { MutationCtx } from "../_generated/server";
 export const DEFAULT_SERVICE = {
   name: "45-Minute Hydrotherapy & Bonding Massage",
   description:
-    "One unhurried visit combining warm hydrotherapy and parent–baby bonding massage — expert-led, gentle, and designed for babies 0–18 months with their caregiver.",
+    "A 45-minute visit with warm hydrotherapy and parent–baby bonding massage. For babies 0–18 months, with a caregiver in the room the whole time.",
   durationMinutes: 45,
   priceCents: 0,
   active: true,

@@ -99,8 +99,8 @@ export function SiteLayout() {
           <div>
             <p className="font-serif text-lg text-foreground">Zen Baby Studio</p>
             <p className="mt-2 max-w-xs leading-relaxed">
-              One 45-minute infant spa session — hydrotherapy, bonding massage, and
-              sound therapy — in Sandy Springs.
+              45-minute infant spa sessions in Sandy Springs: hydrotherapy, bonding
+              massage, and sound therapy.
             </p>
           </div>
           <div>

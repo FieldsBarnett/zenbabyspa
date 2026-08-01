@@ -123,7 +123,7 @@ export function BookPage() {
         <h1 className="font-serif text-3xl">You&apos;re booked!</h1>
         <p className="mt-3 text-muted-foreground">
           A confirmation email is on its way to <strong>{email.trim()}</strong>.
-          Your appointment is saved to your account — sign in with that email
+          Your appointment is saved to your account. Sign in with that email
           anytime to view or manage it.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -148,8 +148,8 @@ export function BookPage() {
     <div className="container max-w-2xl py-12">
       <h1 className="font-serif text-4xl">Book a session</h1>
       <p className="mt-2 text-muted-foreground">
-        Step {step} of {stepFlow.length} — choose a date and time, then we&apos;ll
-        save the booking to your account with your email.
+        Step {step} of {stepFlow.length}. Pick a date and time, then enter your
+        email to save the booking.
       </p>
 
       {currentStep === "service" && (
@@ -259,8 +259,8 @@ export function BookPage() {
           <CardHeader>
             <CardTitle>Your details & confirm</CardTitle>
             <CardDescription>
-              Enter your email and we&apos;ll add this booking to your account
-              automatically — or create one if you&apos;re new.
+              Enter your email. We&apos;ll add this booking to your account, or
+              create one if you&apos;re new.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

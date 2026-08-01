@@ -44,7 +44,7 @@ export function AuthPage() {
         <CardHeader>
           <CardTitle className="font-serif text-2xl">Sign in</CardTitle>
           <CardDescription>
-            Enter your email and we&apos;ll send you a magic link — no password needed.
+            Enter your email. We&apos;ll send a magic link. No password needed.
           </CardDescription>
         </CardHeader>
         <CardContent>
