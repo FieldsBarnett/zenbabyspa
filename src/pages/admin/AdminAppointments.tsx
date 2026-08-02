@@ -1,9 +1,9 @@
 import { useMutation, useQuery } from "convex/react";
-import { format } from "date-fns";
 import { api } from "../../../convex/_generated/api";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatStudioAppointmentShort } from "@/lib/studioTimezone";
 
 export function AdminAppointments() {
   const appointments = useQuery(api.admin.schedule.listAppointments, {});
@@ -27,7 +27,7 @@ export function AdminAppointments() {
                   {a.customer.name} — {a.service.name}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {format(a.startTime, "EEE, MMM d 'at' h:mm a")} · {a.customer.email}
+                  {formatStudioAppointmentShort(a.startTime)} · {a.customer.email}
                 </div>
               </div>
               <div className="flex items-center gap-2">

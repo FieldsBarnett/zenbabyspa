@@ -14,8 +14,9 @@ import {
   formatAppointmentDate,
   formatAppointmentTime,
   generateAvailableSlots,
-  getDayStartMs,
   getTodayAndTomorrowBounds,
+  getZonedDateKey,
+  getZonedDayStartMs,
   STUDIO_TIMEZONE,
 } from "./lib/scheduling";
 import { EMAIL_TEMPLATE_KEYS } from "./lib/emailTemplates";
@@ -24,7 +25,7 @@ import { STUDIO_NOTIFICATION_EMAIL } from "./lib/studioEmail";
 export const getAvailableSlots = query({
   args: {
     serviceId: v.id("services"),
-    dateMs: v.number(),
+    dateKey: v.string(),
     nowMs: v.number(),
   },
   returns: v.array(v.number()),
@@ -34,7 +35,7 @@ export const getAvailableSlots = query({
       return [];
     }
 
-    const dayStart = getDayStartMs(args.dateMs);
+    const dayStart = getZonedDayStartMs(args.dateKey, STUDIO_TIMEZONE);
     const dayEnd = dayStart + 24 * 60 * 60 * 1000;
 
     const rules = await ctx.db.query("availabilityRules").collect();
@@ -57,7 +58,7 @@ export const getAvailableSlots = query({
     );
 
     return generateAvailableSlots({
-      dateMs: args.dateMs,
+      dateKey: args.dateKey,
       durationMinutes: service.durationMinutes,
       rules,
       blockedTimes: dayBlocked,
@@ -88,7 +89,8 @@ export const createAppointment = mutation({
       name: args.name,
     });
 
-    const dayStart = getDayStartMs(args.startTime);
+    const dateKey = getZonedDateKey(args.startTime, STUDIO_TIMEZONE);
+    const dayStart = getZonedDayStartMs(dateKey, STUDIO_TIMEZONE);
     const dayEnd = dayStart + 24 * 60 * 60 * 1000;
 
     const rules = await ctx.db.query("availabilityRules").collect();
@@ -111,7 +113,7 @@ export const createAppointment = mutation({
     );
 
     const slots = generateAvailableSlots({
-      dateMs: args.startTime,
+      dateKey,
       durationMinutes: service.durationMinutes,
       rules,
       blockedTimes: dayBlocked,
@@ -220,7 +222,7 @@ export const cancelAppointment = authedMutation({
 export const getAvailableSlotsInternal = internalQuery({
   args: {
     serviceId: v.id("services"),
-    dateMs: v.number(),
+    dateKey: v.string(),
     nowMs: v.number(),
   },
   returns: v.array(v.number()),
@@ -230,7 +232,7 @@ export const getAvailableSlotsInternal = internalQuery({
       return [];
     }
 
-    const dayStart = getDayStartMs(args.dateMs);
+    const dayStart = getZonedDayStartMs(args.dateKey, STUDIO_TIMEZONE);
     const dayEnd = dayStart + 24 * 60 * 60 * 1000;
 
     const rules = await ctx.db.query("availabilityRules").collect();
@@ -253,7 +255,7 @@ export const getAvailableSlotsInternal = internalQuery({
     );
 
     return generateAvailableSlots({
-      dateMs: args.dateMs,
+      dateKey: args.dateKey,
       durationMinutes: service.durationMinutes,
       rules,
       blockedTimes: dayBlocked,

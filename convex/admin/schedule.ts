@@ -1,4 +1,5 @@
 import { internal } from "../_generated/api";
+import { internalMutation } from "../_generated/server";
 import { v } from "convex/values";
 import { adminMutation, adminQuery } from "../lib/customFunctions";
 
@@ -219,6 +220,18 @@ export const deleteBlockedTime = adminMutation({
   handler: async (ctx, args) => {
     await ctx.db.delete(args.blockedTimeId);
     return null;
+  },
+});
+
+export const clearAllBlockedTimes = internalMutation({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    const blockedTimes = await ctx.db.query("blockedTimes").collect();
+    for (const blocked of blockedTimes) {
+      await ctx.db.delete(blocked._id);
+    }
+    return blockedTimes.length;
   },
 });
 

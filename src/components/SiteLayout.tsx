@@ -25,7 +25,8 @@ export function SiteLayout() {
             to="/"
             className="font-serif text-xl tracking-tight text-foreground"
           >
-            Zen Baby Studio
+            <span className="md:hidden">ZBS</span>
+            <span className="hidden md:inline">Zen Baby Studio</span>
           </Link>
           <nav className="flex items-center gap-5 text-sm md:gap-6">
             <NavLink

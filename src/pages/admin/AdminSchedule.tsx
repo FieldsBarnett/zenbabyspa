@@ -1,19 +1,5 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
-import {
-  addMonths,
-  eachDayOfInterval,
-  endOfDay,
-  endOfMonth,
-  endOfWeek,
-  format,
-  isSameMonth,
-  isToday,
-  startOfDay,
-  startOfMonth,
-  startOfWeek,
-  subMonths,
-} from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -22,6 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import {
+  combineStudioDateAndTime,
+  formatStudioDateMedium,
+  formatStudioMonthLabel,
+  getStudioCalendarDays,
+  getStudioDateKey,
+  getStudioDayEndMs,
+  getStudioDayStartMs,
+  getStudioYearMonth,
+  isStudioToday,
+  shiftStudioYearMonth,
+} from "@/lib/studioTimezone";
 
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -33,27 +31,21 @@ type BlockedEntry = {
   reason: string;
 };
 
-function dayBounds(dateMs: number) {
-  const start = startOfDay(dateMs).getTime();
-  const end = endOfDay(dateMs).getTime();
-  return { start, end };
+function dayBounds(dateKey: string) {
+  return {
+    start: getStudioDayStartMs(dateKey),
+    end: getStudioDayEndMs(dateKey),
+  };
 }
 
-function isDateBlocked(dateMs: number, blocked: BlockedEntry[]) {
-  const { start, end } = dayBounds(dateMs);
+function isDateBlocked(dateKey: string, blocked: BlockedEntry[]) {
+  const { start, end } = dayBounds(dateKey);
   return blocked.some((b) => b.startTime < end && b.endTime > start);
 }
 
-function blocksForDate(dateMs: number, blocked: BlockedEntry[]) {
-  const { start, end } = dayBounds(dateMs);
+function blocksForDate(dateKey: string, blocked: BlockedEntry[]) {
+  const { start, end } = dayBounds(dateKey);
   return blocked.filter((b) => b.startTime < end && b.endTime > start);
-}
-
-function combineDateAndTime(dateMs: number, time: string) {
-  const [hours, minutes] = time.split(":").map(Number);
-  const date = new Date(startOfDay(dateMs));
-  date.setHours(hours ?? 0, minutes ?? 0, 0, 0);
-  return date.getTime();
 }
 
 export function AdminSchedule() {
@@ -70,26 +62,16 @@ export function AdminSchedule() {
   const [partialDate, setPartialDate] = useState("");
   const [partialStart, setPartialStart] = useState("09:00");
   const [partialEnd, setPartialEnd] = useState("12:00");
-  const [visibleMonthMs, setVisibleMonthMs] = useState(() =>
-    startOfMonth(new Date()).getTime(),
+  const [viewYearMonth, setViewYearMonth] = useState(() =>
+    getStudioYearMonth(getStudioDateKey()),
   );
-  const [togglingDateMs, setTogglingDateMs] = useState<number | null>(null);
+  const [togglingDateKey, setTogglingDateKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const visibleMonth = new Date(visibleMonthMs);
-
-  const calendarDays = useMemo(() => {
-    const month = new Date(visibleMonthMs);
-    const monthStart = startOfMonth(month);
-    const monthEnd = endOfMonth(month);
-    return eachDayOfInterval({
-      start: startOfWeek(monthStart),
-      end: endOfWeek(monthEnd),
-    }).map((day) => ({
-      dateMs: startOfDay(day).getTime(),
-      inMonth: isSameMonth(day, month),
-    }));
-  }, [visibleMonthMs]);
+  const calendarDays = useMemo(
+    () => getStudioCalendarDays(viewYearMonth),
+    [viewYearMonth],
+  );
 
   async function saveRule(ruleId?: Id<"availabilityRules">) {
     await upsertRule({
@@ -102,21 +84,21 @@ export function AdminSchedule() {
     });
   }
 
-  async function toggleDate(dateMs: number) {
+  async function toggleDate(dateKey: string) {
     if (!blocked) return;
 
-    setTogglingDateMs(dateMs);
+    setTogglingDateKey(dateKey);
     setError(null);
-    setPartialDate(format(dateMs, "yyyy-MM-dd"));
+    setPartialDate(dateKey);
 
     try {
-      const existing = blocksForDate(dateMs, blocked);
+      const existing = blocksForDate(dateKey, blocked);
       if (existing.length > 0) {
         for (const entry of existing) {
           await deleteBlocked({ blockedTimeId: entry._id });
         }
       } else {
-        const { start, end } = dayBounds(dateMs);
+        const { start, end } = dayBounds(dateKey);
         await createBlocked({
           startTime: start,
           endTime: end,
@@ -126,7 +108,7 @@ export function AdminSchedule() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update blocked date");
     } finally {
-      setTogglingDateMs(null);
+      setTogglingDateKey(null);
     }
   }
 
@@ -136,9 +118,8 @@ export function AdminSchedule() {
       return;
     }
 
-    const dateMs = startOfDay(new Date(`${partialDate}T12:00:00`)).getTime();
-    const start = combineDateAndTime(dateMs, partialStart);
-    const end = combineDateAndTime(dateMs, partialEnd);
+    const start = combineStudioDateAndTime(partialDate, partialStart);
+    const end = combineStudioDateAndTime(partialDate, partialEnd);
     if (end <= start) {
       setError("End time must be after start time.");
       return;
@@ -167,7 +148,7 @@ export function AdminSchedule() {
       <div>
         <h1 className="font-serif text-3xl">Schedule</h1>
         <p className="mt-2 text-muted-foreground">
-          Manage weekly hours and blocked dates
+          Manage weekly hours and blocked dates. All times are Eastern Time.
         </p>
       </div>
 
@@ -210,7 +191,7 @@ export function AdminSchedule() {
                 className="flex items-center justify-between rounded border px-3 py-2"
               >
                 <span>
-                  {dayNames[rule.dayOfWeek]} {rule.startTime}–{rule.endTime}
+                  {dayNames[rule.dayOfWeek]} {rule.startTime}–{rule.endTime} ET
                   {!rule.active && " (inactive)"}
                 </span>
                 <Button
@@ -268,20 +249,20 @@ export function AdminSchedule() {
                 size="icon"
                 className="h-8 w-8"
                 onClick={() =>
-                  setVisibleMonthMs(startOfMonth(subMonths(visibleMonth, 1)).getTime())
+                  setViewYearMonth((current) => shiftStudioYearMonth(current, -1))
                 }
                 aria-label="Previous month"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <p className="font-medium">{format(visibleMonth, "MMMM yyyy")}</p>
+              <p className="font-medium">{formatStudioMonthLabel(viewYearMonth)}</p>
               <Button
                 type="button"
                 variant="outline"
                 size="icon"
                 className="h-8 w-8"
                 onClick={() =>
-                  setVisibleMonthMs(startOfMonth(addMonths(visibleMonth, 1)).getTime())
+                  setViewYearMonth((current) => shiftStudioYearMonth(current, 1))
                 }
                 aria-label="Next month"
               >
@@ -298,23 +279,22 @@ export function AdminSchedule() {
             </div>
 
             <div className="grid grid-cols-7 gap-1">
-              {calendarDays.map(({ dateMs, inMonth }) => {
-                if (!inMonth) {
-                  return <div key={dateMs} className="aspect-square" />;
+              {calendarDays.map((cell, index) => {
+                if (!cell) {
+                  return <div key={`empty-${index}`} className="aspect-square" />;
                 }
 
-                const blockedDay = isDateBlocked(dateMs, blocked);
-                const isToggling = togglingDateMs === dateMs;
-                const matchesPartial =
-                  partialDate === format(dateMs, "yyyy-MM-dd");
+                const blockedDay = isDateBlocked(cell.dateKey, blocked);
+                const isToggling = togglingDateKey === cell.dateKey;
+                const matchesPartial = partialDate === cell.dateKey;
 
                 return (
                   <button
-                    key={dateMs}
+                    key={cell.dateKey}
                     type="button"
                     disabled={isToggling}
-                    onClick={() => void toggleDate(dateMs)}
-                    aria-label={`${format(dateMs, "EEEE, MMMM d, yyyy")}, ${
+                    onClick={() => void toggleDate(cell.dateKey)}
+                    aria-label={`${cell.dateKey}, ${
                       blockedDay ? "blocked" : "open"
                     }. Click to toggle.`}
                     className={cn(
@@ -323,7 +303,9 @@ export function AdminSchedule() {
                         ? "border-destructive/30 bg-destructive/5 text-muted-foreground opacity-70 hover:bg-destructive/10"
                         : "border-border bg-background hover:bg-accent",
                       matchesPartial && "ring-2 ring-primary ring-offset-1",
-                      isToday(dateMs) && !blockedDay && "font-semibold text-primary",
+                      isStudioToday(cell.dateKey) &&
+                        !blockedDay &&
+                        "font-semibold text-primary",
                     )}
                   >
                     {blockedDay && (
@@ -334,7 +316,7 @@ export function AdminSchedule() {
                         <span className="absolute left-1/2 top-1/2 h-px w-[141%] -translate-x-1/2 -translate-y-1/2 rotate-45 bg-destructive/45" />
                       </span>
                     )}
-                    <span className="relative">{format(dateMs, "d")}</span>
+                    <span className="relative">{cell.day}</span>
                   </button>
                 );
               })}
@@ -399,8 +381,8 @@ export function AdminSchedule() {
                 className="flex items-center justify-between rounded border px-3 py-2"
               >
                 <span>
-                  {format(b.startTime, "MMM d, h:mm a")} –{" "}
-                  {format(b.endTime, "MMM d, h:mm a")} · {b.reason}
+                  {formatStudioDateMedium(b.startTime)} –{" "}
+                  {formatStudioDateMedium(b.endTime)} · {b.reason}
                 </span>
                 <Button
                   variant="outline"

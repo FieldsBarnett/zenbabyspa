@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { format } from "date-fns";
 import { api } from "../../convex/_generated/api";
 import { AuthenticatedProfile } from "@/hooks/useProfileSync";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatStudioAppointment } from "@/lib/studioTimezone";
 
 function AccountContent() {
   const profile = useQuery(api.users.getMyProfile);
@@ -48,7 +48,7 @@ function AccountContent() {
               <div>
                 <div className="font-medium">{appointment.service.name}</div>
                 <div className="text-sm text-muted-foreground">
-                  {format(appointment.startTime, "EEEE, MMM d 'at' h:mm a")}
+                  {formatStudioAppointment(appointment.startTime)}
                 </div>
               </div>
               <div className="flex items-center gap-2">

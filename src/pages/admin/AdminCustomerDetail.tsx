@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "convex/react";
-import { format } from "date-fns";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { formatStudioDateShort } from "@/lib/studioTimezone";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function AdminCustomerDetail() {
@@ -83,7 +83,7 @@ export function AdminCustomerDetail() {
                 {a.serviceName} · {a.status}
               </span>
               <span className="text-muted-foreground">
-                {format(a.startTime, "MMM d, yyyy h:mm a")}
+                {formatStudioDateShort(a.startTime)}
               </span>
             </div>
           ))}

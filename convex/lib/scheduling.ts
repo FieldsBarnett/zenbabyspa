@@ -1,9 +1,17 @@
-import { format } from "date-fns";
-
 export const STUDIO_TIMEZONE =
   process.env.STUDIO_TIMEZONE ?? "America/New_York";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const WEEKDAY_TO_INDEX: Record<string, number> = {
+  Sunday: 0,
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+};
 
 type ZonedParts = {
   year: number;
@@ -39,6 +47,11 @@ function getZonedParts(dateMs: number, timeZone: string): ZonedParts {
   };
 }
 
+function parseCalendarDateUtcNoon(dateKey: string): Date {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+}
+
 export function getZonedDateKey(dateMs: number, timeZone: string): string {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -55,6 +68,17 @@ export function getZonedDayStartMs(dateKey: string, timeZone: string): number {
   const msFromMidnight =
     parts.hour * 3_600_000 + parts.minute * 60_000 + parts.second * 1000;
   return anchor - msFromMidnight;
+}
+
+export function getZonedDayOfWeekFromDateKey(
+  dateKey: string,
+  timeZone: string,
+): number {
+  const weekday = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    weekday: "long",
+  }).format(parseCalendarDateUtcNoon(dateKey));
+  return WEEKDAY_TO_INDEX[weekday] ?? 0;
 }
 
 export function isStudioReminderHour(nowMs: number): boolean {
@@ -83,18 +107,37 @@ export function minutesToTime(minutes: number): string {
   return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
 }
 
+/** Start of the studio calendar day containing this UTC timestamp. */
 export function getDayStartMs(dateMs: number): number {
-  const date = new Date(dateMs);
-  date.setHours(0, 0, 0, 0);
-  return date.getTime();
+  const dateKey = getZonedDateKey(dateMs, STUDIO_TIMEZONE);
+  return getZonedDayStartMs(dateKey, STUDIO_TIMEZONE);
+}
+
+function formatInStudioTimezone(
+  dateMs: number,
+  options: Intl.DateTimeFormatOptions,
+): string {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: STUDIO_TIMEZONE,
+    ...options,
+  }).format(new Date(dateMs));
 }
 
 export function formatAppointmentDate(startTime: number): string {
-  return format(new Date(startTime), "EEEE, MMMM d, yyyy");
+  return formatInStudioTimezone(startTime, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export function formatAppointmentTime(startTime: number): string {
-  return format(new Date(startTime), "h:mm a");
+  return formatInStudioTimezone(startTime, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 export type AvailabilityRule = {
@@ -116,15 +159,18 @@ export type ExistingAppointment = {
 };
 
 export function generateAvailableSlots(args: {
-  dateMs: number;
+  dateKey: string;
   durationMinutes: number;
   rules: AvailabilityRule[];
   blockedTimes: BlockedTime[];
   appointments: ExistingAppointment[];
   nowMs: number;
 }): number[] {
-  const dayStart = getDayStartMs(args.dateMs);
-  const dayOfWeek = new Date(dayStart).getDay();
+  const dayStart = getZonedDayStartMs(args.dateKey, STUDIO_TIMEZONE);
+  const dayOfWeek = getZonedDayOfWeekFromDateKey(
+    args.dateKey,
+    STUDIO_TIMEZONE,
+  );
   const activeRules = args.rules.filter(
     (rule) => rule.active && rule.dayOfWeek === dayOfWeek,
   );

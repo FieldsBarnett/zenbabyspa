@@ -1,7 +1,7 @@
 import { useQuery } from "convex/react";
-import { format } from "date-fns";
 import { api } from "../../../convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatStudioDateMedium } from "@/lib/studioTimezone";
 
 export function AdminDashboard() {
   const appointments = useQuery(api.admin.schedule.listAppointments, {});
@@ -44,7 +44,7 @@ export function AdminDashboard() {
                 {a.customer.name} — {a.service.name}
               </span>
               <span className="text-muted-foreground">
-                {format(a.startTime, "MMM d, h:mm a")}
+                {formatStudioDateMedium(a.startTime)}
               </span>
             </div>
           ))}

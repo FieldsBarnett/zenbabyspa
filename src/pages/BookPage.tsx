@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import { addDays, format, startOfDay } from "date-fns";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { BookingCalendar } from "@/components/BookingCalendar";
@@ -17,12 +16,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import {
+  addStudioDays,
+  formatStudioDateFull,
+  formatStudioDateKeyDisplay,
+  formatStudioTime,
+  getStudioDateKey,
+} from "@/lib/studioTimezone";
 
 const BOOKING_HORIZON_DAYS = 60;
-
-function startOfDayMs(date = new Date()) {
-  return startOfDay(date).getTime();
-}
 
 export function BookPage() {
   const [searchParams] = useState(() => new URLSearchParams(window.location.search));
@@ -34,7 +36,7 @@ export function BookPage() {
   const initialService = searchParams.get("service") as Id<"services"> | null;
   const [step, setStep] = useState(1);
   const [serviceId, setServiceId] = useState<Id<"services"> | null>(initialService);
-  const [dateMs, setDateMs] = useState<number>(() => startOfDayMs());
+  const [dateKey, setDateKey] = useState(() => getStudioDateKey());
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -44,21 +46,21 @@ export function BookPage() {
   const [loading, setLoading] = useState(false);
   const [prefilledContact, setPrefilledContact] = useState(false);
 
-  const minDateMs = useMemo(() => startOfDayMs(), []);
-  const maxDateMs = useMemo(
-    () => startOfDay(addDays(new Date(minDateMs), BOOKING_HORIZON_DAYS)).getTime(),
-    [minDateMs],
+  const minDateKey = useMemo(() => getStudioDateKey(), []);
+  const maxDateKey = useMemo(
+    () => addStudioDays(minDateKey, BOOKING_HORIZON_DAYS),
+    [minDateKey],
   );
 
   const singleOffering = services?.length === 1 ? services[0] : null;
   const activeServiceId = serviceId ?? singleOffering?._id ?? null;
   const nowMs = useMemo(
     () => Date.now(),
-    [activeServiceId, dateMs],
+    [activeServiceId, dateKey],
   );
   const slots = useQuery(
     api.booking.getAvailableSlots,
-    activeServiceId ? { serviceId: activeServiceId, dateMs, nowMs } : "skip",
+    activeServiceId ? { serviceId: activeServiceId, dateKey, nowMs } : "skip",
   );
 
   const selectedService = useMemo(
@@ -89,8 +91,8 @@ export function BookPage() {
     return `$${(priceCents / 100).toFixed(0)}`;
   }
 
-  function handleSelectDate(nextDateMs: number) {
-    setDateMs(nextDateMs);
+  function handleSelectDate(nextDateKey: string) {
+    setDateKey(nextDateKey);
     setSelectedSlot(null);
   }
 
@@ -199,17 +201,17 @@ export function BookPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <BookingCalendar
-              selectedDateMs={dateMs}
-              onSelectDate={handleSelectDate}
-              minDateMs={minDateMs}
-              maxDateMs={maxDateMs}
+              selectedDateKey={dateKey}
+              onSelectDateKey={handleSelectDate}
+              minDateKey={minDateKey}
+              maxDateKey={maxDateKey}
             />
 
             <div className="space-y-3 border-t pt-6">
               <div>
                 <h3 className="font-medium">Available times</h3>
                 <p className="text-sm text-muted-foreground">
-                  {format(dateMs, "EEEE, MMMM d")}
+                  {formatStudioDateKeyDisplay(dateKey)}
                 </p>
               </div>
 
@@ -247,7 +249,7 @@ export function BookPage() {
                           : "hover:border-primary/40",
                       )}
                     >
-                      {format(slot, "h:mm a")}
+                      {formatStudioTime(slot)}
                     </button>
                   ))}
                 </div>
@@ -282,7 +284,7 @@ export function BookPage() {
               <p>
                 <strong>{selectedService.name}</strong>
               </p>
-              <p>{format(selectedSlot, "EEEE, MMMM d 'at' h:mm a")}</p>
+              <p>{formatStudioDateFull(selectedSlot)}</p>
               {formatServicePrice(selectedService.priceCents) && (
                 <p>{formatServicePrice(selectedService.priceCents)}</p>
               )}
