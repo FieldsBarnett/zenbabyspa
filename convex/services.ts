@@ -1,6 +1,5 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
-import { DEFAULT_SERVICE } from "./lib/defaultService";
 
 const serviceValidator = v.object({
   _id: v.id("services"),
@@ -11,7 +10,22 @@ const serviceValidator = v.object({
   priceCents: v.number(),
   imageUrl: v.optional(v.string()),
   active: v.boolean(),
+  sortOrder: v.optional(v.number()),
 });
+
+function compareServicesByOrder<
+  T extends { sortOrder?: number; _creationTime: number; name: string },
+>(a: T, b: T) {
+  const orderA = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
+  const orderB = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
+  if (orderA !== orderB) {
+    return orderA - orderB;
+  }
+  if (a._creationTime !== b._creationTime) {
+    return a._creationTime - b._creationTime;
+  }
+  return a.name.localeCompare(b.name);
+}
 
 export const listPublic = query({
   args: {},
@@ -22,15 +36,7 @@ export const listPublic = query({
       .withIndex("by_active", (q) => q.eq("active", true))
       .collect();
 
-    if (services.length <= 1) {
-      return services;
-    }
-
-    const canonical =
-      services.find((service) => service.name === DEFAULT_SERVICE.name) ??
-      services[0];
-
-    return canonical ? [canonical] : [];
+    return services.sort(compareServicesByOrder);
   },
 });
 

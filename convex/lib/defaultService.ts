@@ -51,10 +51,14 @@ export async function ensureDefaultService(
           ? canonical.priceCents
           : DEFAULT_SERVICE.priceCents,
       active: true,
+      sortOrder: canonical.sortOrder ?? 0,
     });
     canonicalId = canonical._id;
   } else {
-    canonicalId = await ctx.db.insert("services", { ...DEFAULT_SERVICE });
+    canonicalId = await ctx.db.insert("services", {
+      ...DEFAULT_SERVICE,
+      sortOrder: 0,
+    });
   }
 
   for (const service of allServices) {

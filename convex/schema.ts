@@ -16,7 +16,10 @@ export default defineSchema({
     priceCents: v.number(),
     imageUrl: v.optional(v.string()),
     active: v.boolean(),
-  }).index("by_active", ["active"]),
+    sortOrder: v.optional(v.number()),
+  })
+    .index("by_active", ["active"])
+    .index("by_sort_order", ["sortOrder"]),
 
   availabilityRules: defineTable({
     dayOfWeek: v.number(),
@@ -43,7 +46,8 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_start_time", ["startTime"])
-    .index("by_status_and_start", ["status", "startTime"]),
+    .index("by_status_and_start", ["status", "startTime"])
+    .index("by_service", ["serviceId"]),
 
   userProfiles: defineTable({
     authUserId: v.string(),
